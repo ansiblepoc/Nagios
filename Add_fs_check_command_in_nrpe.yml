@@ -1,0 +1,8 @@
+---
+- name: setup Nagios nrpe file system check
+  hosts: Your_hosts
+  tasks:
+  - name: Configure NRPE for remote updates
+    lineinfile: path=/usr/local/nagios/etc/nrpe.cfg line='command[check_fs_list]=/usr/local/nagios/libexec/check_filesystem_list'
+  - name: copy libexec directory
+    copy: "src=files/nagios/libexec dest=/usr/local/nagios owner=nagios mode=0755"
