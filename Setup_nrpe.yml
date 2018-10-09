@@ -1,0 +1,35 @@
+---
+- name: setup Nagios nrpe
+  hosts: Your_hosts
+  tasks:
+  - name: opy tarball to remote system
+    copy: src=files/nagios/linux-nrpe-agent.tar.gz dest=/tmp
+  - name: decompress tar ball to target tmp
+    unarchive: src=/tmp/linux-nrpe-agent.tar.gz dest=/tmp remote_src=yes
+  - name: Remove the tarball in /tmp
+    file: path=/tmp/linux-nrpe-agent.tar.gz state=absent
+  - name: copy installation scripts
+    copy: "src=files/nagios/nagios-silentinstall.sh dest=/tmp mode=755"
+  - name: copy another
+    copy: "src=files/nagios/nagios-install.sh dest=/tmp mode=755"
+  - name: run installation script
+    shell: "/tmp/nagios-silentinstall.sh" 
+  - name: setup groups for Nagios user to monitor oracle dbs
+    user:
+       name: nagios
+       state: present 
+       groups: dba
+       append: yes
+    ignore_errors: yes
+  - name: copy libexec directory 
+    copy: "src=files/nagios/libexec dest=/usr/local/nagios owner=nagios mode=0755"
+  - name: Copy etc directory
+    copy: "src=files/nagios/etc dest=/usr/local/nagios owner=nagios mode=0755"
+  - name: Configure NRPE for remote updates
+    lineinfile: path=/usr/local/nagios/etc/nrpe.cfg line='command[check_fs_list]=/usr/local/nagios/libexec/check_filesystem_list'
+  - name: Granting NRPE Permission to Restart Services
+    lineinfile: path=/etc/sudoers state=present line='nagios ALL=NOPASSWD:/sbin/service' validate='visudo -cf %s'
+  - name: restart NRPE service
+    systemd: name=nrpe state=restarted enabled=yes daemon_reload=yes
+  - name: restart firewall
+    systemd: name=firewalld state=restarted enabled=yes daemon_reload=yes 
