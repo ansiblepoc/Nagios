@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+STATE_DEPENDENT=4
+
+/bin/df -x nfs -x tmpfs -x devtmpfs -P | /bin/grep -v Filesystem | /bin/awk '{print $6}' >/tmp/fs_list 2>/dev/null
+exec 4<&0
+exec 4</tmp/fs_list
+while read -u4 fsname
+do
+        echo $fsname
+done
+exit $STATE_OK
