@@ -1,0 +1,43 @@
+#Add line to nrpe.cfg on the target server
+command[restart_tidal]=sudo /opt/TIDAL/Agent/bin/tagent $ARG1$ start
+#Add sudoer
+nagios ALL=NOPASSWD:/opt/TIDAL/Agent/bin/tagent
+# On Nagios XI server
+vi /usr/local/nagios/libexec/restart_tidal.sh
+#!/bin/sh
+case "$1" in
+  OK)
+      ;;
+  WARNING)
+      ;;
+  UNKNOWN)
+      ;;
+  CRITICAL)
+      /usr/local/nagios/libexec/check_nrpe -H "$2" -p 5666 -c restart_tidal -a "$3"
+      ;;
+esac
+exit 0
+chmod 775 /usr/local/nagios/libexec/restart_tidal.sh
+chown apache:nagios /usr/local/nagios/libexec/restart_tidal.sh
+#Follow doc to setup service in XI
+https://assets.nagios.com/downloads/nagiosxi/docs/Restarting-Linux-Services-With-NRPE.pdf#_ga=2.92374557.1081210683.1532366029-831402239.1527176902
+#service defination become this
+define service {
+        host_name                       hostname
+        service_description             Tidal Process
+        use                             generic-service
+        check_command                   check_nrpe!check_procs! -a '-a agent=tidalname -c 1:'!!!!!!
+        max_check_attempts              5
+        check_interval                  5
+        retry_interval                  1
+        check_period                    xi_timeperiod_24x7
+        event_handler                   Restart Tidal Agent - Linux
+        event_handler_enabled           1
+        notification_interval           1440
+        notification_period             xi_timeperiod_24x7
+        notifications_enabled           1
+        _SERVICE                        tidalname
+        _xiwizard                       nrpe
+        register                        1
+        }
+        
