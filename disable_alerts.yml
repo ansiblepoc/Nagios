@@ -1,0 +1,12 @@
+---
+- name: disable alerts in Nagios
+  hosts: '{{ server }}'
+   vars:
+    Nagios_server: "your_Nagios_server_name"
+  tasks:
+   - name: disable alerts of database node
+     nagios:
+      action: disable_alerts
+      services: all
+      host: '{{ inventory_hostname }}'
+     delegate_to: "{{ Nagios_server }}" 
