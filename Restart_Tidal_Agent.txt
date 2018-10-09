@@ -40,4 +40,5 @@ define service {
         _xiwizard                       nrpe
         register                        1
         }
-        
+#API call to modify
+curl -XPOST "http://${API_PATH}/config/service?apikey=${apikey}&pretty=1" -d "host_name=${DB_NAME}&service_description=Tidal%20Process&check_command=check_nrpe\!check_procs\!%20\-a%20\'\-a%20agent\=${DB_NAME}%20\-c%201\:\'\!\!\!\!\!\!\!&check_interval=5&retry_interval=1&max_check_attempts=5&check_period=xi_timeperiod_24x7&event_handler=Restart%20Tidal%20Agent%20\-%20Linux&event_handler_enabled=1&contacts=QADB&notification_interval=1440&contact_groups=ProdDB&notification_period=xi_timeperiod_24x7&notifications_enabled=1&_SERVICE=${DB_NAME}&_xiwizard=nrpe&register=1"
