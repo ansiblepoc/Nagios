@@ -1,0 +1,8 @@
+---
+- name: setup Nagios nrpe client to enable restarting of Tidal Agent services
+  hosts: hostlist
+  tasks:
+  - name: Configure NRPE for adding restart Tidal Agent command
+    lineinfile: path=/usr/local/nagios/etc/nrpe.cfg line='command[restart_tidal]=sudo /opt/TIDAL/Agent/bin/tagent $ARG1$ start'
+  - name: Granting NRPE Permission to Restart Tidal Services
+    lineinfile: path=/etc/sudoers state=present line='nagios ALL=NOPASSWD:/opt/TIDAL/Agent/bin/tagent' validate='visudo -cf %s'
