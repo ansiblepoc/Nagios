@@ -1,3 +1,6 @@
+#Referance: https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/3/en/eventhandlers.html
+#           https://assets.nagios.com/downloads/nagiosxi/docs/Restarting-Linux-Services-With-NRPE.pdf#_ga=2.92374557.1081210683.1532366029-831402239.1527176902
+#           https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/customobjectvars.html
 #Add line to nrpe.cfg on the target server
 command[restart_tidal]=sudo /opt/TIDAL/Agent/bin/tagent $ARG1$ start
 #Add sudoer
@@ -26,7 +29,7 @@ define service {
         host_name                       hostname
         service_description             Tidal Process
         use                             generic-service
-        check_command                   check_nrpe!check_procs! -a '-a agent=tidalname -c 1:'!!!!!!
+        check_command                   check_nrpe!check_procs! -a '-a agent=tidalname -c 1:'
         max_check_attempts              5
         check_interval                  5
         retry_interval                  1
@@ -41,4 +44,4 @@ define service {
         register                        1
         }
 #API call to modify
-curl -XPOST "http://${API_PATH}/config/service?apikey=${apikey}&pretty=1" -d "host_name=${DB_NAME}&service_description=Tidal%20Process&check_command=check_nrpe\!check_procs\!%20\-a%20\'\-a%20agent\=${DB_NAME}%20\-c%201\:\'\!\!\!\!\!\!\!&check_interval=5&retry_interval=1&max_check_attempts=5&check_period=xi_timeperiod_24x7&event_handler=Restart%20Tidal%20Agent%20\-%20Linux&event_handler_enabled=1&contacts=QADB&notification_interval=1440&contact_groups=ProdDB&notification_period=xi_timeperiod_24x7&notifications_enabled=1&_SERVICE=${DB_NAME}&_xiwizard=nrpe&register=1"
+curl -XPOST "http://${API_PATH}/config/service?apikey=${apikey}&pretty=1" -d "host_name=${DB_NAME}&service_description=Tidal%20Process&check_command=check_nrpe\!check_procs\!%20\-a%20\'\-a%20agent\=${DB_NAME}%20\-c%201\:\'&check_interval=5&retry_interval=1&max_check_attempts=5&check_period=xi_timeperiod_24x7&event_handler=Restart%20Tidal%20Agent%20\-%20Linux&event_handler_enabled=1&contacts=QADB&notification_interval=1440&contact_groups=ProdDB&notification_period=xi_timeperiod_24x7&notifications_enabled=1&_SERVICE=${DB_NAME}&_xiwizard=nrpe&register=1"
